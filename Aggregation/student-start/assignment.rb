@@ -56,15 +56,18 @@ class Solution
   #
 
   def racer_names
-    #place solution here
+    racers = Solution.collection
+    racers.find.aggregate([ { :$project => { :_id => 0, :first_name => 1 , :last_name => 1 }}])
   end
 
   def id_number_map 
-    #place solution here
+    racers = Solution.collection
+    racers.find.aggregate([ { :$project => { :number => 1 }}])
   end
 
   def concat_names
-    #place solution here
+    racers = Solution.collection
+    racers.find.aggregate([ { :$project => { :_id => 0, :number => 1, :name => {:$concat => ["$last_name", ", ", "$first_name"]} }}])
   end
 
   #
