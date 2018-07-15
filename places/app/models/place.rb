@@ -8,12 +8,14 @@ class Place < ActionController::Base
 
   def initialize(params)
   	@id = params[:_id].to_s
-  	@formatted_address = params[:formatted_address]
-  	@location = Point.new(params[:geometry][:location])
+  	@formatted_address = params[:formatted_address] if params[:formatted_address]
+  	@location = Point.new(params[:geometry][:geolocation]) if params[:geometry][:geolocation]
   	@address_components = []
-  	params[:address_components]. each do |address|
-  		@address_components << AddressComponent.new(address)
-  	end
+    if params[:address_components]
+  	  params[:address_components]. each do |address|
+  		  @address_components << AddressComponent.new(address)
+  	  end
+    end
   end
 
   def destroy
@@ -96,5 +98,9 @@ class Place < ActionController::Base
     collection.find('geometry.geolocation' => {
       :$near => request
     })
+  end
+
+  def near(max_meters = nil)
+    self.class.to_places(self.class.near(@location, max_meters))
   end
 end
