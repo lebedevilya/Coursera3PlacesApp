@@ -17,7 +17,8 @@ class Place < ActionController::Base
   end
 
   def destroy
- #   pp Place.collection.find(:_id => BSON::ObjectId.from_string(@id))
+    id = BSON::ObjectId.from_string(@id)
+    Place.collection.find(:_id => id).delete_one()
   end
 
   def self.collection
@@ -43,7 +44,8 @@ class Place < ActionController::Base
 
   def self.find(id)
     id = BSON::ObjectId.from_string(id)
-    Place.new(self.collection.find({:_id => id}).first)
+    result = collection.find({:_id => id}).first
+    return result.nil? ? nil : Place.new(result)
   end
 
   def self.all(offset = 0, limit = nil)
