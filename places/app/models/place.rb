@@ -55,4 +55,30 @@ class Place < ActionController::Base
     result.each {|p| ans << Place.new(p)}
     return ans
   end
+
+  def self.get_address_components(sort=nil, offset=0, limit=0)
+      aggregate_array = [{'$unwind': '$address_components'}, {'$project': {'address_components': 1, 'formatted_address': 1, 'geometry.geolocation': 1}}]
+      aggregate_array << {'$sort': sort} if sort
+      aggregate_array << {'$skip': offset} if offset > 0
+      aggregate_array << {'$limit': limit} if limit > 0
+      collection.find.aggregate(aggregate_array)
+  end
+
+  def self.get_country_names()
+    aggregate_array = [
+      {'$unwind': '$address_components'},
+      {'$project': {'address_components.long_name': 1, 'address_components.types': 1}},
+      {'$match': {'address_components.types': "country"}},
+      {'$group': {'_id': '$address_components.long_name'}}
+    ]
+    result = collection.find.aggregate(aggregate_array).to_a.map {|h| h[:_id]}
+  end
+
+  def self.find_ids_by_country_code(country_code)
+    aggregate_array = [
+      {'$match': {'address_components.short_name': country_code, 'address_components.types': "country"}},
+      {'$project': {'_id': 1}},
+    ]
+    result = collection.find.aggregate(aggregate_array).to_a.map {|h| h[:_id].to_s}
+  end
 end
