@@ -1,7 +1,8 @@
 class Place < ActionController::Base
   include ActiveModel::Model
-  helper PlacesHelper
+
   attr_accessor :id, :formatted_address, :location, :address_components
+  
   def self.mongo_client
     Mongoid::Clients.default
   end
