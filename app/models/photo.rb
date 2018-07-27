@@ -73,7 +73,7 @@ class Photo
         lng: result[:metadata][:location][:coordinates][0],
         lat: result[:metadata][:location][:coordinates][1])
       photo.id = result[:_id].to_s
-      photo.place = BSON::ObjectId.from_string(result[:metadata][:place])
+      photo.place = BSON::ObjectId.from_string(result[:metadata][:place]) if result[:metadata][:place]
       photo
     end
   end

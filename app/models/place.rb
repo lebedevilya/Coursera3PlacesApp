@@ -19,6 +19,10 @@ class Place < ActionController::Base
     end
   end
 
+  def persisted?
+    !@id.nil?
+  end
+
   def destroy
     id = BSON::ObjectId.from_string(@id)
     Place.collection.find(:_id => id).delete_one()
