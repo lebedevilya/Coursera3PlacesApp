@@ -104,4 +104,12 @@ class Place < ActionController::Base
   def near(max_meters = nil)
     self.class.to_places(self.class.near(@location, max_meters))
   end
+
+  def photos(offset = 0, limit = nil)
+    result = Photo.find_photos_for_place(BSON::ObjectId.from_string(@id))#.skip(offset)
+    result = result.limit(limit) if limit
+    ans = []
+    result.map {|doc| ans << Photo.new(doc)}
+    return ans
+  end
 end
